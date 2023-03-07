@@ -6,7 +6,6 @@ import os
 #My files
 import users.accountMaker as ac
 
-
 # Change appearance from dark to light and back using a button
 ctk.set_appearance_mode('light')
 def changeApp():
@@ -187,26 +186,37 @@ class MainFrame(ctk.CTk):
         tabview.add("Příjmy")
         tabview.add("Výdaje")
 
-        buttonIncome = ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem")) 
-        buttonIncome.place(relx = 0.35, rely = 0.8)
+        buttonIncome = ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview)).place(relx = 0.35, rely = 0.8)
+        buttonExp = ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview)).place(relx = 0.35, rely = 0.8)
         
-        buttonExp = ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj"))
-        buttonExp.place(relx = 0.35, rely = 0.8)
+        ctk.CTkLabel(tabview.tab("Příjmy"), text = "         ".join(["Hodnota", "Den", "Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
+        ctk.CTkLabel(tabview.tab("Výdaje"), text = "         ".join(["Hodnota", "Den", "Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         
-    def update_money(self, user):
+        self.update_money(self.user, "inc", 1, tabview.tab("Příjmy"))
+        self.update_money(self.user, "exp", 1, tabview.tab("Výdaje"))
+        
+    def update_money(self, user, type, page, tab):
+        info = []
+        
         path = os.path.join("users", user, user + ".txt")
         with open(path) as file:
             for i in file:
-                typ, val, day, mon, yea, cat = i.split("$")
-                if typ == "inc":
-                    print(typ, val, day, mon, yea, cat, end="")
+                if i.startswith(type):
+                    typ, val, day, mon, yea, cat = i.split("$")
+                    info.append([typ, val, day, mon, yea, cat])
                 else:
-                    for i in typ, val, day, mon, yea, cat:
-                        i = " "
-                
+                    continue
+        
+        for i in range(min(len(info), 5)):
+            statement = ""
+            filerange = i + (5 * (page - 1))
+            for j in range(1, 6):
+                statement = statement + "         " + info[filerange][j]
+            label = ctk.CTkLabel(tab, text= statement, font=("Arial", 16), fg_color="#808080", corner_radius= 50)
+            label.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.15 * float(i + 1))    
         
     # Function to handle income or expense addition
-    def add_income(self, type):
+    def add_income(self, type, tabview):
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Přidat " + type)
@@ -230,11 +240,11 @@ class MainFrame(ctk.CTk):
         day_label.place(relx = 0.2, rely = 0.2)
         cat_label.place(relx = 0.2, rely = 0.3)
         
-        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get()))
+        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview))
         button.place(relx = 0.35, rely = 0.5)
         
     # Function to handle submitting info about income or expense
-    def submit(self, win, type, val, day, mon, yea, cat):
+    def submit(self, win, type, val, day, mon, yea, cat, tabview):
         try:
             val = int(val)
             day = int(day)
@@ -252,10 +262,10 @@ class MainFrame(ctk.CTk):
                 
                 if type == "příjem":
                     Money("inc", val, day, mon, yea, cat).save_money_info(self.user)
-                    self.update_money(self.user)
+                    self.update_money(self.user, "inc", 1, tabview.tab("Příjmy"))
                 else:
                     Money("exp", val, day, mon, yea, cat).save_money_info(self.user)
-                    self.update_money(self.user)
+                    self.update_money(self.user, "exp", 1, tabview.tab("Výdaje"))
                 win.destroy()
 
 app = MainFrame()
