@@ -1,5 +1,6 @@
 import customtkinter as ctk
-from tkinter import *
+from tkinter import * 
+from PIL import Image
 import hashlib
 import os
 
@@ -38,8 +39,7 @@ class MainFrame(ctk.CTk):
     # Initialize function for the class
     def __init__(self):
         self.users = {}
-        self.income = []
-        self.expen = []
+        self.balance = 0
         self.categ = []
         
         super().__init__()
@@ -48,9 +48,9 @@ class MainFrame(ctk.CTk):
         self.title(' WealthWise')
         self.geometry('1920x1080+0+0')
         
-        img = PhotoImage(file="photo/logo.png")
-        self.logo = ctk.CTkLabel(self, image=img, text= "")
-        self.logo.place(relx = 0.3, rely = 0.1)
+        img = ctk.CTkImage(light_image= Image.open("photo/logo.png"), size=(500,100))
+        logo = ctk.CTkLabel(self, image=img, text= "")
+        logo.place(relx = 0.32, rely = 0.1)
 
         # Create a username input field
         self.user_label = ctk.CTkLabel(self, text="Jméno:", font=("Arial", 20))
@@ -144,7 +144,7 @@ class MainFrame(ctk.CTk):
             if user_hash == hash:
                 self.user = username
                 
-                self.open_window(self.user)
+                self.open_window()
                 
                 self.user_entry.delete(0, ctk.END)
                 self.pass_entry.delete(0, ctk.END)
@@ -163,10 +163,13 @@ class MainFrame(ctk.CTk):
         win.withdraw()
         
     # Function to open the main window
-    def open_window(self, user):
+    def open_window(self):
         win = ctk.CTkToplevel(self)
         win.geometry('1920x1080+0+0')
         win.title("WealthWise")
+        
+        moneyAll = ctk.CTkLabel(win, text=str(self.balance), font=("Arial", 70))
+        moneyAll.place(relx=0.5, rely = 0.15)
         
         buttonChange = ctk.CTkButton(win,  
                             text='Změnit vzhled',
@@ -174,8 +177,8 @@ class MainFrame(ctk.CTk):
                             corner_radius= 0) 
         buttonChange.place(relx = 0, rely = 0.9)
         
-        out_label = ctk.CTkLabel(win, text="Přihlášen: " + self.user, font=("Arial", 15))
-        out_label.place(relx=0.07, rely=0.06, anchor="center")
+        outLabel = ctk.CTkLabel(win, text="Přihlášen: " + self.user, font=("Arial", 15))
+        outLabel.place(relx=0.07, rely=0.06, anchor="center")
         
         buttonLogOut = ctk.CTkButton(win, text="Odhlásit se", command= lambda: self.logout(win)) 
         buttonLogOut.place(relx = 0.02, rely = 0.08)
@@ -186,16 +189,18 @@ class MainFrame(ctk.CTk):
         tabview.add("Příjmy")
         tabview.add("Výdaje")
 
-        buttonIncome = ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview)).place(relx = 0.35, rely = 0.8)
-        buttonExp = ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview)).place(relx = 0.35, rely = 0.8)
+        #Add income
+        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview, moneyAll)).place(relx = 0.35, rely = 0.9)
+        #Add expense
+        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview, moneyAll)).place(relx = 0.35, rely = 0.9)
         
         ctk.CTkLabel(tabview.tab("Příjmy"), text = "         ".join(["Hodnota", "Den", "Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         ctk.CTkLabel(tabview.tab("Výdaje"), text = "         ".join(["Hodnota", "Den", "Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         
-        self.update_money(self.user, "inc", 1, tabview.tab("Příjmy"))
-        self.update_money(self.user, "exp", 1, tabview.tab("Výdaje"))
+        self.update_money(self.user, "inc", 1, tabview.tab("Příjmy"), moneyAll)
+        self.update_money(self.user, "exp", 1, tabview.tab("Výdaje"), moneyAll)
         
-    def update_money(self, user, type, page, tab):
+    def update_money(self, user, type, page, tab, moneyAll):
         info = []
         
         path = os.path.join("users", user, user + ".txt")
@@ -204,6 +209,10 @@ class MainFrame(ctk.CTk):
                 if i.startswith(type):
                     typ, val, day, mon, yea, cat = i.split("$")
                     info.append([typ, val, day, mon, yea, cat])
+                    if type == "inc":
+                        self.balance += int(val)
+                    else:
+                        self.balance -= int(val)
                 else:
                     continue
         
@@ -215,8 +224,10 @@ class MainFrame(ctk.CTk):
             label = ctk.CTkLabel(tab, text= statement, font=("Arial", 16), fg_color="#808080", corner_radius= 50)
             label.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.15 * float(i + 1))    
         
+        moneyAll.configure(text=str(self.balance))
+        
     # Function to handle income or expense addition
-    def add_income(self, type, tabview):
+    def add_income(self, type, tabview, moneyAll):
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Přidat " + type)
@@ -240,11 +251,11 @@ class MainFrame(ctk.CTk):
         day_label.place(relx = 0.2, rely = 0.2)
         cat_label.place(relx = 0.2, rely = 0.3)
         
-        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview))
+        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview, moneyAll))
         button.place(relx = 0.35, rely = 0.5)
         
     # Function to handle submitting info about income or expense
-    def submit(self, win, type, val, day, mon, yea, cat, tabview):
+    def submit(self, win, type, val, day, mon, yea, cat, tabview, moneyAll):
         try:
             val = int(val)
             day = int(day)
@@ -260,12 +271,14 @@ class MainFrame(ctk.CTk):
                     (mon in [1, 3, 5, 7, 8, 10, 12] and day <= 31)
                 ) and val > 0:
                 
+                self.balance = 0
+                
                 if type == "příjem":
                     Money("inc", val, day, mon, yea, cat).save_money_info(self.user)
-                    self.update_money(self.user, "inc", 1, tabview.tab("Příjmy"))
+                    self.update_money(self.user, "inc", 1, tabview.tab("Příjmy"), moneyAll)
                 else:
                     Money("exp", val, day, mon, yea, cat).save_money_info(self.user)
-                    self.update_money(self.user, "exp", 1, tabview.tab("Výdaje"))
+                    self.update_money(self.user, "exp", 1, tabview.tab("Výdaje"), moneyAll)
                 win.destroy()
 
 app = MainFrame()
