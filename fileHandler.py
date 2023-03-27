@@ -6,10 +6,14 @@ class FileHandler:
         self.path = os.path.join("users", self.user, self.user + ".txt")
         
     # https://stackoverflow.com/questions/4710067/how-to-delete-a-specific-line-in-a-text-file-using-python
-    def deleteLine(self, delNum):
+    def deleteLine(self, delPhrase):
+        condition = False
+        
         with open(self.path, "r") as file:
             text = file.readlines()
         with open(self.path, "w") as file:
             for i in text:
-                if i.strip("\n") != delNum:
+                if i.strip("\n") == delPhrase and condition == False:
+                    condition = True
+                else:
                     file.write(i)
