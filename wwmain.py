@@ -41,6 +41,7 @@ class MainFrame(ctk.CTk):
     # Initialize function for the class
     def __init__(self):
         self.users = {}
+        self.info = [[],[]]
         self.categ = []
         self.balance = 0
         self.inc = []
@@ -198,10 +199,10 @@ class MainFrame(ctk.CTk):
         tabview.add("Příjmy")
         tabview.add("Výdaje")
         
-        ctk.CTkButton(tabview.tab("Příjmy"), text = "-", command= lambda: self.changePageNum("min", win, "inc", moneyAll)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
-        ctk.CTkButton(tabview.tab("Příjmy"), text = "+", command= lambda: self.changePageNum("add", win, "inc", moneyAll)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
-        ctk.CTkButton(tabview.tab("Výdaje"), text = "-", command= lambda: self.changePageNum("min", win, "exp", moneyAll)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
-        ctk.CTkButton(tabview.tab("Výdaje"), text = "+", command= lambda: self.changePageNum("add", win, "exp", moneyAll)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
+        ctk.CTkButton(tabview.tab("Příjmy"), text = "-", command= lambda: self.changePageNum("min", win, "inc", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
+        ctk.CTkButton(tabview.tab("Příjmy"), text = "+", command= lambda: self.changePageNum("add", win, "inc", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
+        ctk.CTkButton(tabview.tab("Výdaje"), text = "-", command= lambda: self.changePageNum("min", win, "exp", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
+        ctk.CTkButton(tabview.tab("Výdaje"), text = "+", command= lambda: self.changePageNum("add", win, "exp", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
 
         incNum = ctk.CTkLabel(tabview.tab("Příjmy"), text = str(self.pageNumInc))
         incNum.place(relheight = 0.1, relx = 0.5, rely = 0.73)
@@ -209,52 +210,52 @@ class MainFrame(ctk.CTk):
         expNum.place(relheight = 0.1, relx = 0.5, rely = 0.73)
         
         #Creating labels to show preffered type
-        self.labels = [[ctk.CTkLabel(tabview.tab("Příjmy"), text = " ") for m in range(5)], [ctk.CTkLabel(tabview.tab("Výdaje"), text = " ") for k in range(5)]]
+        labels = [[ctk.CTkLabel(tabview.tab("Příjmy"), text = " ") for m in range(5)], [ctk.CTkLabel(tabview.tab("Výdaje"), text = " ") for k in range(5)]]
         
         # Placing the labels
         for x in range(2):
             y = 0.11
-            for k in self.labels[x]:
+            for k in labels[x]:
                 k.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = y)
                 y += 0.11
         
         #Creating delete buttons
         try:
-            incButton1 = ctk.CTkButton(tabview.tab("Příjmy"), command = lambda: self.deleteMoney(1, "inc", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            incButton1.place(width = 50, height = 50, relx = 0.9, rely = 0.11)
-            incButton2 = ctk.CTkButton(tabview.tab("Příjmy"), command = lambda: self.deleteMoney(2, "inc", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            incButton2.place(width = 50, height = 50, relx = 0.9, rely = 0.22)
-            incButton3 = ctk.CTkButton(tabview.tab("Příjmy"), command = lambda: self.deleteMoney(3, "inc", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            incButton3.place(width = 50, height = 50, relx = 0.9, rely = 0.33)
-            incButton4 = ctk.CTkButton(tabview.tab("Příjmy"), command = lambda: self.deleteMoney(4, "inc", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            incButton4.place(width = 50, height = 50, relx = 0.9, rely = 0.44)
-            incButton5 = ctk.CTkButton(tabview.tab("Příjmy"), command = lambda: self.deleteMoney(5, "inc", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            incButton5.place(width = 50, height = 50, relx = 0.9, rely = 0.55)
-                    
-            expButton1 = ctk.CTkButton(tabview.tab("Výdaje"), command = lambda: self.deleteMoney(1, "exp", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            expButton1.place(width = 50, height = 50, relx = 0.9, rely = 0.11)
-            expButton2 = ctk.CTkButton(tabview.tab("Výdaje"), command = lambda: self.deleteMoney(2, "exp", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            expButton2.place(width = 50, height = 50, relx = 0.9, rely = 0.22)
-            expButton3 = ctk.CTkButton(tabview.tab("Výdaje"), command = lambda: self.deleteMoney(3, "exp", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            expButton3.place(width = 50, height = 50, relx = 0.9, rely = 0.33)
-            expButton4 = ctk.CTkButton(tabview.tab("Výdaje"), command = lambda: self.deleteMoney(4, "exp", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            expButton4.place(width = 50, height = 50, relx = 0.9, rely = 0.44)
-            expButton5 = ctk.CTkButton(tabview.tab("Výdaje"), command = lambda: self.deleteMoney(5, "exp", self.labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(50, 50)), text = "")
-            expButton5.place(width = 50, height = 50, relx = 0.9, rely = 0.55)
+            incButton1 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(1, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton1.place(relx = 0.9, rely = 0.11)
+            incButton2 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(2, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton2.place( relx = 0.9, rely = 0.22)
+            incButton3 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(3, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton3.place( relx = 0.9, rely = 0.33)
+            incButton4 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(4, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton4.place( relx = 0.9, rely = 0.44)
+            incButton5 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(5, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton5.place( relx = 0.9, rely = 0.55)
+    
+            expButton1 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(1, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton1.place( relx = 0.9, rely = 0.11)
+            expButton2 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(2, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton2.place( relx = 0.9, rely = 0.22)
+            expButton3 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(3, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton3.place( relx = 0.9, rely = 0.33)
+            expButton4 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(4, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton4.place( relx = 0.9, rely = 0.44)
+            expButton5 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(5, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton5.place( relx = 0.9, rely = 0.55)
         except:
             print("Missing .png file or photo folder")
         
         #Add income
-        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview, moneyAll, self.labels)).place(relx = 0.35, rely = 0.9)
+        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview, moneyAll, labels)).place(relx = 0.35, rely = 0.9)
         #Add expense
-        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview, moneyAll, self.labels)).place(relx = 0.35, rely = 0.9)
+        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview, moneyAll, labels)).place(relx = 0.35, rely = 0.9)
         
         #Add labels
         ctk.CTkLabel(tabview.tab("Příjmy"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         ctk.CTkLabel(tabview.tab("Výdaje"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         
-        self.update_money(self.user, self.inc, "inc", self.pageNumInc, moneyAll, self.labels, 0)
-        self.update_money(self.user, self.exp, "exp", self.pageNumExp, moneyAll, self.labels, 1)
+        self.update_money(self.user, self.inc, "inc", self.pageNumInc, moneyAll, labels, 0)
+        self.update_money(self.user, self.exp, "exp", self.pageNumExp, moneyAll, labels, 1)
         
     def deleteMoney(self, pos, typ, labels, moneyAll, win):
         try:
@@ -262,15 +263,19 @@ class MainFrame(ctk.CTk):
             if typ == "inc":
                 finder.deleteLine(self.inc[(((self.pageNumInc - 1) * 5) + pos) - 1])
                 
-            else:
+            elif typ == "exp":
                 finder.deleteLine(self.exp[(((self.pageNumInc - 1) * 5) + pos) - 1])
-        except:
+            else:
+                pass
+
+        except Exception as e:
             print("Invalid button clicked")
-            
-        self.update_money(self.user, self.inc, "inc", self.pageNumInc, moneyAll, self.labels, 0)
-        self.update_money(self.user, self.exp, "exp", self.pageNumExp, moneyAll, self.labels, 1)
+            print(e)
+
+        win.withdraw()
+        self.open_window()
         
-    def changePageNum(self, operation, win, type, moneyAll):
+    def changePageNum(self, operation, win, type, moneyAll, labels):
         
         if type == "inc":
             if self.pageNumInc > 0:
@@ -285,20 +290,20 @@ class MainFrame(ctk.CTk):
                 else:
                     self.pageNumExp -= 1
                 
-        self.update_money(self.user, self.inc, "inc", self.pageNumInc, moneyAll, self.labels, 0)
-        self.update_money(self.user, self.exp, "exp", self.pageNumExp, moneyAll, self.labels, 1)
+        win.winthdraw()
+        self.open_window()
         
     def update_money(self, user, list, type, pageNum, moneyAll, labels, x):
 
         list.clear()
-        info = []
+        self.info[x].clear()
               
         path = os.path.join("users", user, user + ".txt")
         with open(path) as file:
             for i in file:
                 if i.startswith(type):
                     typ, val, day, mon, yea, cat = i.split("$")
-                    info.append([typ, val, day, mon, yea, cat])
+                    self.info[x].append([typ, val, day, mon, yea, cat])
                 else:
                     continue
                 
@@ -308,25 +313,24 @@ class MainFrame(ctk.CTk):
                 else:
                     self.exp.append(i.strip("\n"))
                     self.balance -= int(val)
-
             
-            print(info)
+            print(self.info)
             try:
-                info = sorter.sort_money(info)
+                self.info[x] = sorter.sort_money(self.info[x])
             except:
                 pass
-            print(info)
+            print(self.info)
             
             for i in range(5):
                 try:
                     statement = ""
                     filerange = i + ((pageNum - 1) * 5)
                     for j in range(1, 6):
-                        statement = statement + "         " + str(info[filerange][j])
-                    self.labels[x][i].configure(text = statement)           
+                        statement = statement + "         " + str(self.info[x][filerange][j])
+                    labels[x][i].configure(text = statement)           
                     moneyAll.configure(text="Zůstatek:     " + str(self.balance))
-                except Exception as exception:
-                    print(exception)
+                except:
+                    print("Ended loop")
                     break                
         
     # Function to handle income or expense addition
@@ -357,7 +361,7 @@ class MainFrame(ctk.CTk):
         errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", text_color="white", state = "disabled")
         errorLabel.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.8)
         
-        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview, moneyAll, self.labels, errorLabel))
+        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview, moneyAll, labels, errorLabel))
         button.place(relx = 0.35, rely = 0.5)
         
     # Function to handle submitting info about income or expense
@@ -377,7 +381,7 @@ class MainFrame(ctk.CTk):
             
         else:    
             if (   
-                    ((mon == 2 and day <= 28 and yea % 4 != 0) or (mon == 2 and day <= 29 and yea % 4 == 0)) or 
+                    ((mon == 2 and day <= 28 and self.isLeapYear(yea) == False) or (mon == 2 and day <= 29 and self.isLeapYear(yea))) or 
                     (mon in [4, 6, 9, 11] and day <= 30) or 
                     (mon in [1, 3, 5, 7, 8, 10, 12] and day <= 31)
                 ) and val > 0 and len(cat) <= 5:
@@ -389,10 +393,20 @@ class MainFrame(ctk.CTk):
                 else:
                     Money("exp", val, day, mon, yea, cat.strip()).save_money_info(self.user)
                     
-                self.update_money(self.user, self.inc, "inc", self.pageNumInc, moneyAll, self.labels, 0)
-                self.update_money(self.user, self.exp, "exp", self.pageNumExp, moneyAll, self.labels, 1)
+                self.update_money(self.user, self.inc, "inc", self.pageNumInc, moneyAll, labels, 0)
+                self.update_money(self.user, self.exp, "exp", self.pageNumExp, moneyAll, labels, 1)
                 self.categ.append(cat.lower())
-                win.destroy()      
+                win.destroy()    
+
+    def isLeapYear(self, year):
+        if year % 4 != 0:
+            return False
+        elif year % 100 != 0:
+            return True
+        elif year % 400 != 0:
+            return False
+        else:
+            return True  
 
 app = MainFrame()
 

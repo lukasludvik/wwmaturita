@@ -8,5 +8,3 @@ def sort_money(money):
     print(sort_values)
 
     return sort_values
-
-
