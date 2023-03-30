@@ -5,7 +5,7 @@ class FileHandler:
         self.user = user
         self.path = os.path.join("users", self.user, self.user + ".txt")
         
-    # https://stackoverflow.com/questions/4710067/how-to-delete-a-specific-line-in-a-text-file-using-python
+    # Copied from https://stackoverflow.com/questions/4710067/how-to-delete-a-specific-line-in-a-text-file-using-python
     def deleteLine(self, delPhrase):
         condition = False
         

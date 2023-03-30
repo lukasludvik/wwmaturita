@@ -8,6 +8,7 @@ import os
 import users.accountMaker as ac
 import fileHandler as filehandle
 import sorter as sorter
+import filter as filter
 
 # Change appearance from dark to light and back using a button
 ctk.set_appearance_mode('light')
@@ -48,6 +49,7 @@ class MainFrame(ctk.CTk):
         self.exp = []
         self.pageNumInc = 1
         self.pageNumExp = 1
+        self.changeConstant = "Příjmy"
         
         super().__init__()
         self.load_users()
@@ -198,6 +200,8 @@ class MainFrame(ctk.CTk):
 
         tabview.add("Příjmy")
         tabview.add("Výdaje")
+
+        tabview.set(self.changeConstant)
         
         ctk.CTkButton(tabview.tab("Příjmy"), text = "-", command= lambda: self.changePageNum("min", win, "inc", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
         ctk.CTkButton(tabview.tab("Příjmy"), text = "+", command= lambda: self.changePageNum("add", win, "inc", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
@@ -276,21 +280,22 @@ class MainFrame(ctk.CTk):
         self.open_window()
         
     def changePageNum(self, operation, win, type, moneyAll, labels):
-        
         if type == "inc":
             if self.pageNumInc > 0:
                 if operation == "add":
                     self.pageNumInc += 1
                 else:
                     self.pageNumInc -= 1
+            self.changeConstant = "Příjmy"
         else:
             if self.pageNumExp > 0:
                 if operation == "add":
                     self.pageNumExp += 1
                 else:
                     self.pageNumExp -= 1
+            self.changeConstant = "Výdaje"
                 
-        win.winthdraw()
+        win.withdraw()
         self.open_window()
         
     def update_money(self, user, list, type, pageNum, moneyAll, labels, x):
@@ -364,6 +369,14 @@ class MainFrame(ctk.CTk):
         button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview, moneyAll, labels, errorLabel))
         button.place(relx = 0.35, rely = 0.5)
         
+    def isValidMonth(self, day, mon, yea):
+       if (((mon == 2 and day <= 28 and self.isLeapYear(yea) == False) or (mon == 2 and day <= 29 and self.isLeapYear(yea))) or 
+            (mon in [4, 6, 9, 11] and day <= 30) or 
+            (mon in [1, 3, 5, 7, 8, 10, 12] and day <= 31)):
+           return True
+       else:
+           return False
+
     # Function to handle submitting info about income or expense
     def submit(self, win, type, val, day, mon, yea, cat, tabview, moneyAll, labels, errorLabel):
         try:
@@ -380,11 +393,7 @@ class MainFrame(ctk.CTk):
                 errorLabel.configure(text = "Datum neexistuje")
             
         else:    
-            if (   
-                    ((mon == 2 and day <= 28 and self.isLeapYear(yea) == False) or (mon == 2 and day <= 29 and self.isLeapYear(yea))) or 
-                    (mon in [4, 6, 9, 11] and day <= 30) or 
-                    (mon in [1, 3, 5, 7, 8, 10, 12] and day <= 31)
-                ) and val > 0 and len(cat) <= 5:
+            if self.isValidMonth(day, mon, yea) and val > 0 and len(cat) <= 5:
                 
                 self.balance = 0
                 
@@ -407,6 +416,47 @@ class MainFrame(ctk.CTk):
             return False
         else:
             return True  
+
+    def filterMoneyWindow(self, type):
+        window = ctk.CTkToplevel(self)
+        window.geometry("400x300")
+        window.title("Filtrovat " + type)
+
+        template = [[[]],[[]],[[],[]],[[]]]
+
+        template[0][0] = ["=", "inc"]
+
+        textVal = ctk.CTkEntry(window, font=("Arial", 15), width=140, height=10)
+        val_label = ctk.CTkLabel(window, text="Hodnota", font=("Arial", 15))
+        textDay = ctk.CTkEntry(window, font=("Arial", 15), width=30, height=10)
+        day_label = ctk.CTkLabel(window, text="Od:", font=("Arial", 15))
+        textMon = ctk.CTkEntry(window, font=("Arial", 15),width=30, height=10)
+        textYea = ctk.CTkEntry(window, font=("Arial", 15), width=60, height=10)
+
+        textDay = ctk.CTkEntry(window, font=("Arial", 15), width=30, height=10)
+        day_label = ctk.CTkLabel(window, text="Do:", font=("Arial", 15))
+        textMon = ctk.CTkEntry(window, font=("Arial", 15),width=30, height=10)
+        textYea = ctk.CTkEntry(window, font=("Arial", 15), width=60, height=10)
+
+        textCat = ctk.CTkEntry(window, font=("Arial", 15), width=140, height=10, placeholder_text="max 5 char")
+        cat_label = ctk.CTkLabel(window, text="Kategorie", font=("Arial", 15))
+
+        textVal.place(relx = 0.55, rely = 0.1)
+        textDay.place(relx = 0.55, rely = 0.2)
+        textMon.place(relx = 0.65, rely = 0.2)
+        textYea.place(relx = 0.75, rely = 0.2)
+        textCat.place(relx = 0.55, rely = 0.3)
+        
+        val_label.place(relx = 0.2, rely = 0.1)
+        day_label.place(relx = 0.2, rely = 0.2)
+        cat_label.place(relx = 0.2, rely = 0.3)
+        
+        errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", text_color="white", state = "disabled")
+        errorLabel.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.8)
+        
+        button = ctk.CTkButton(window, text="Submit")
+        button.place(relx = 0.35, rely = 0.5)
+
 
 app = MainFrame()
 
