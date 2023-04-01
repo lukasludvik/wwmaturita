@@ -123,12 +123,12 @@ class MainFrame(ctk.CTk):
         elif user.strip(" ") != "":
             try:
                 file = open("users\password.txt", "a")
-                file.write(user + "\n") #Writes the username in the file
+                file.write(user + "\n")
                 
-                salt = os.urandom(5).hex() #Generates a salt
-                hasher = hashlib.sha256() #Create a new hasher object using the sha256 algorithm
-                hasher.update(salt.encode() + passw.encode()) #Add the salt and password to the hasher object
-                hashed_passw = hasher.hexdigest() #Get the hash value as a string
+                salt = os.urandom(5).hex()
+                hasher = hashlib.sha256()
+                hasher.update(salt.encode() + passw.encode())
+                hashed_passw = hasher.hexdigest()
                 
                 file.write(salt + "$" + hashed_passw + "\n") #Saves the password in a file
                 
@@ -253,8 +253,8 @@ class MainFrame(ctk.CTk):
         ctk.CTkLabel(tabview.tab("Příjmy"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         ctk.CTkLabel(tabview.tab("Výdaje"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         
-        self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0, [[], [], [], []])
-        self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1, [[], [], [], []])
+        self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0)
+        self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1)
         
     def delete_money(self, pos, typ, win):
         try:
@@ -276,27 +276,23 @@ class MainFrame(ctk.CTk):
         
     def change_page_num(self, operation, win, type):
         if type == "inc":
-            if self.pageNum[0] > 0 and self.pageNum[0] < self.maxPageNum[0]:
-                if operation == "add":
+            if operation == "add" and self.pageNum[0] > 0 and self.pageNum[0] < self.maxPageNum[0]:
                     self.pageNum[0] += 1
-                else:
+            elif operation == "min" and self.pageNum[0] > 1 and self.pageNum[0] <= self.maxPageNum[0]:
                     self.pageNum[0] -= 1
             self.changeConstant = "Příjmy"
         else:
-            if self.pageNum[1] > 0 and self.pageNum[1] < self.maxPageNum[1]:
-                if operation == "add":
-                    self.pageNum[1] += 1
-                else:
-                    self.pageNum[1] -= 1 
+            if operation == "add" and self.pageNum[0] > 0 and self.pageNum[0] < self.maxPageNum[0]:
+                self.pageNum[1] += 1
+            elif operation == "min" and self.pageNum[0] > 1 and self.pageNum[0] <= self.maxPageNum[0]:
+                self.pageNum[1] -= 1 
             self.changeConstant = "Výdaje"
                 
         win.withdraw()
         self.open_window()
         
         
-        self.maxPageNum
-        
-    def update_money(self, user, list, type, pageNum, moneyAll, labels, x, template):
+    def update_money(self, user, list, type, pageNum, moneyAll, labels, x):
         if x == 0:
             self.balance = 0
         list.clear()
@@ -323,7 +319,6 @@ class MainFrame(ctk.CTk):
             except:
                 pass
             
-            template[0] = ["=", type]
             self.info[x] = filter.filter_lists_by_attributes(self.template, self.info[x])
             
             self.maxPageNum[x] = (int(len(self.info[x]) / 5) + 1)
@@ -395,7 +390,7 @@ class MainFrame(ctk.CTk):
                 errorLabel.configure(text = "Datum neexistuje")
             
         else:    
-            if self.isValidMonth(day, mon, yea) and val > 0 and len(cat) <= 5:
+            if self.isValidMonth(day, mon, yea) == True and val > 0 and len(cat) <= 5:
                 
                 self.balance = 0
                 
@@ -404,8 +399,8 @@ class MainFrame(ctk.CTk):
                 else:
                     Money("exp", val, day, mon, yea, cat.strip()).save_money_info(self.user)
                     
-                self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0, [[], [], [], []])
-                self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1, [[], [], [], []])
+                self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0)
+                self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1)
                 self.categ.append(cat.lower())
                 win.destroy()    
 
@@ -464,50 +459,46 @@ class MainFrame(ctk.CTk):
     def check_filter(self, textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, errorLabel, textVal, textCat, optionMenu, moneyAll, labels, window):
         condition = True
         
-        self.template = [[],[],[[], []],[]]
-        try:
-            if textVal.get != "":
-                direction = "="
-                if optionMenu.get() == "Více než":
-                    direction = ">"
-                elif optionMenu.get() == "Méně než":
-                    direction = "<"
+        self.template = [[["=", "inc"]],[],[[],[]],[]]
 
-                try:
-                    self.template[1] = [direction, int(textVal.get())]
-                except:
-                    errorLabel.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.8)
-                    errorLabel.configure(text = "Hodnota není podporována")
-                    condition = False
+        try:
+            try:
+                if textVal.get() != "":
+                    if optionMenu.get() == "Více než":
+                        self.template[1] = [[">", int(textVal.get())]]
+                    elif optionMenu.get() == "Méně než":
+                        self.template[1] = [["<", int(textVal.get())]]
+                    else:
+                        self.template[1] = [["=", int(textVal.get())]]
+            except:
+                print("Error with value")
+
+            try:
+                if textDayOne.get() != "" and textMonOne.get() != "" and textYeaOne.get() != "":
+                    if self.isValidMonth(int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())) == True:
+                        self.template[2][0] = [">", [int(textYeaOne.get()), int(textMonOne.get()), int(textDayOne.get())]]
+            except:
+                print("Error with first date")
+
+            try:
+                if textDayTwo.get() != "" and textMonTwo.get() != "" and textYeaTwo.get() != "":
+                    if self.isValidMonth(int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())) == True:
+                        self.template[2][1] = ["<", [int(textYeaTwo.get()), int(textMonTwo.get()), int(textDayTwo.get())]]
+            except:
+                print("Error with second date")
+
+            try:
+                if textCat.get() != "":
+                    self.template[3] = [[textCat.get()]]
+            except:
+                print("Error with category")
             
-            if textDayOne.get() != "" and textMonOne.get() != "" and textYeaOne.get() != "":
-                if self.isValidMonth(int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())):
-                    self.template[2][0] = [int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())]
-                elif self.isValidMonth(int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())) == False and textDayOne.get() != "" and textMonOne.get() != "" and textYeaOne.get() != "":
-                    errorLabel.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.8)
-                    errorLabel.configure(text = "Datum neexistuje")
-                    condition = False
-                    
-            if textDayTwo.get() != "" and textMonTwo.get() != "" and textYeaTwo.get() != "":
-                if self.isValidMonth(int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())):
-                    self.template[2][0] = [int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())]
-                elif self.isValidMonth(int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())) == False and textDayTwo.get() != "" and textMonTwo.get() != "" and textYeaTwo.get() != "":
-                    errorLabel.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.8)
-                    errorLabel.configure(text = "Datum neexistuje")
-                    condition = False
-                    
-            if textCat != "":
-                self.template[3] = textCat.get()
-                
-            if condition == True:
-                self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0, [[], [], [], []])
-                self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1, [[], [], [], []])        
-                window.withdraw()
-                    
-            print(self.template, "Template")
-        
         except Exception as e:
             print(e)
+
+        else:
+
+
             
 app = MainFrame()
 

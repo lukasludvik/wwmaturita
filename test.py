@@ -1,44 +1,44 @@
-def flatten_list(lst):
-    new_lst = []
-    for element in lst:
-        if isinstance(element, list):
-            new_lst.extend(flatten_list(element))
-        else:
-            new_lst.append(element)
-    return new_lst
+            if textVal.get() != "":
+                print("hello")
+                direction = "="
+                if optionMenu.get() == "Více než":
+                    direction = ">"
+                elif optionMenu.get() == "Méně než":
+                    direction = "<"
 
-original_lists = [['inc', 4000, [3, 8, 90], 'bdbg'], ['inc', 4000, [3, 8, 90], 'bdbg'], ['inc', 4000, [3, 8, 90], 'bdbg'], ['inc', 4000, [3, 8, 90], 'bdbg']]
-new_lists = []
-
-for lst in original_lists:
-    new_list = flatten_list(lst)
-    new_lists.append(new_list)
-
-print(new_lists)
-
-textVal = ctk.CTkEntry(window, font=("Arial", 15), width=140, height=10)
-        val_label = ctk.CTkLabel(window, text="Hodnota", font=("Arial", 15))
-        textDayOne = ctk.CTkEntry(window, font=("Arial", 15), width=30, height=10)
-        day_label_one = ctk.CTkLabel(window, text="Od", font=("Arial", 15))
-        textDayTwo = ctk.CTkEntry(window, font=("Arial", 15), width=30, height=10)
-        day_label_two = ctk.CTkLabel(window, text="Do", font=("Arial", 15))
-        textMonOne = ctk.CTkEntry(window, font=("Arial", 15),width=30, height=10)
-        textYeaOne = ctk.CTkEntry(window, font=("Arial", 15), width=60, height=10)
-        textMonTwo = ctk.CTkEntry(window, font=("Arial", 15),width=30, height=10)
-        textYeaTwo = ctk.CTkEntry(window, font=("Arial", 15), width=60, height=10)
-        textCat = ctk.CTkEntry(window, font=("Arial", 15), width=140, height=10, placeholder_text="max 5 char")
-        cat_label = ctk.CTkLabel(window, text="Kategorie", font=("Arial", 15))
-
-        textVal.place(relx = 0.55, rely = 0.1)
-        textDayOne.place(relx = 0.55, rely = 0.2)
-        textDayTwo.place(relx = 0.55, rely = 0.4)
-        textMonOne.place(relx = 0.65, rely = 0.2)
-        textMonTwo.place(relx = 0.65, rely = 0.4)
-        textYeaOne.place(relx = 0.75, rely = 0.2)
-        textYeaTwo.place(relx = 0.75, rely = 0.4)
-        textCat.place(relx = 0.55, rely = 0.4)
+                try:
+                    self.template[1] = [direction, int(textVal.get())]
+                    print(self.template) #delete
+                except:
+                    errorLabel.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.8)
+                    errorLabel.configure(text = "Hodnota není podporována")
+                    condition = False
+            
+            if textDayOne.get() != "" and textMonOne.get() != "" and textYeaOne.get() != "":
+                print("nigger")
+                if self.isValidMonth(int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())):
+                    self.template[2][0] = [int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())]
+                elif self.isValidMonth(int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())) == False and textDayOne.get() != "" and textMonOne.get() != "" and textYeaOne.get() != "":
+                    errorLabel.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.8)
+                    errorLabel.configure(text = "Datum neexistuje")
+                    condition = False
+                    
+            if textDayTwo.get() != "" and textMonTwo.get() != "" and textYeaTwo.get() != "":
+                print("nigger Two")
+                if self.isValidMonth(int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())):
+                    self.template[2][0] = [int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())]
+                elif self.isValidMonth(int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())) == False and textDayTwo.get() != "" and textMonTwo.get() != "" and textYeaTwo.get() != "":
+                    errorLabel.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.8)
+                    errorLabel.configure(text = "Datum neexistuje")
+                    condition = False
+                    
+            if textCat != "":
+                self.template[3] = textCat.get()
+                
+            if condition == True:
+                self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0, [[], [], [], []])
+                self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1, [[], [], [], []])        
+                window.withdraw()
+                    
+            print(self.template, "Template")
         
-        val_label.place(relx = 0.2, rely = 0.1)
-        day_label_one.place(relx = 0.2, rely = 0.2)
-        day_label_two.place(relx = 0.2, rely = 0.4)
-        cat_label.place(relx = 0.2, rely = 0.4)
