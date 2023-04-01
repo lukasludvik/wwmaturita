@@ -247,7 +247,7 @@ class MainFrame(ctk.CTk):
         except:
             print("Missing .png file or photo folder")
         
-        ctk.CTkButton(win, text = "Filtrovat", command= lambda: self.filter_money_window(moneyAll, labels), fg_color="green").place(relwidth = 0.1, relheight = 0.03, relx = 0.45, rely = 0.85)
+        ctk.CTkButton(win, text = "Filtrovat", command= lambda: self.filter_money_window(moneyAll, labels, win), fg_color="green").place(relwidth = 0.1, relheight = 0.03, relx = 0.45, rely = 0.85)
         ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview, moneyAll, labels)).place(relx = 0.35, rely = 0.9)
         ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview, moneyAll, labels)).place(relx = 0.35, rely = 0.9)
         ctk.CTkLabel(tabview.tab("Příjmy"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
@@ -319,6 +319,8 @@ class MainFrame(ctk.CTk):
             except:
                 pass
             
+            print(self.template)
+
             self.info[x] = filter.filter_lists_by_attributes(self.template, self.info[x])
             
             self.maxPageNum[x] = (int(len(self.info[x]) / 5) + 1)
@@ -401,7 +403,7 @@ class MainFrame(ctk.CTk):
                     
                 self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0)
                 self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1)
-                self.categ.append(cat.lower())
+
                 win.destroy()    
 
     def isLeapYear(self, year):
@@ -414,7 +416,7 @@ class MainFrame(ctk.CTk):
         else:
             return True  
 
-    def filter_money_window(self, moneyAll, labels):
+    def filter_money_window(self, moneyAll, labels, topWin):
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Filtrovat")
@@ -451,15 +453,14 @@ class MainFrame(ctk.CTk):
         day_label_two.place(relx = 0.2, rely = 0.5)
         cat_label.place(relx = 0.2, rely = 0.6)
         
-        button = ctk.CTkButton(window, text="Submit", command = lambda: self.check_filter(textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, errorLabel, textVal, textCat, optionMenu, moneyAll, labels, window))
+        button = ctk.CTkButton(window, text="Submit", command = lambda: self.check_filter(textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, errorLabel, textVal, textCat, optionMenu, moneyAll, labels, window, topWin))
         button.place(relx = 0.35, rely = 0.7)
         
         errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", state = "disabled")
 
-    def check_filter(self, textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, errorLabel, textVal, textCat, optionMenu, moneyAll, labels, window):
-        condition = True
+    def check_filter(self, textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, errorLabel, textVal, textCat, optionMenu, moneyAll, labels, window, topWin):
         
-        self.template = [[["=", "inc"]],[],[[],[]],[]]
+        self.template = [[],[],[],[]]
 
         try:
             try:
@@ -476,28 +477,31 @@ class MainFrame(ctk.CTk):
             try:
                 if textDayOne.get() != "" and textMonOne.get() != "" and textYeaOne.get() != "":
                     if self.isValidMonth(int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())) == True:
-                        self.template[2][0] = [">", [int(textYeaOne.get()), int(textMonOne.get()), int(textDayOne.get())]]
+                        self.template[2][0] = [[">", [int(textYeaOne.get()), int(textMonOne.get()), int(textDayOne.get())]]]
             except:
                 print("Error with first date")
 
             try:
                 if textDayTwo.get() != "" and textMonTwo.get() != "" and textYeaTwo.get() != "":
                     if self.isValidMonth(int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())) == True:
-                        self.template[2][1] = ["<", [int(textYeaTwo.get()), int(textMonTwo.get()), int(textDayTwo.get())]]
+                        self.template[2][1] = [["<", [int(textYeaTwo.get()), int(textMonTwo.get()), int(textDayTwo.get())]]]
             except:
                 print("Error with second date")
 
             try:
                 if textCat.get() != "":
-                    self.template[3] = [[textCat.get()]]
-            except:
+                    self.template[3] = [["=", textCat.get()]]
+            
+            except Exception as e:
                 print("Error with category")
+
+            topWin.withdraw()
+            window.withdraw()
+
+            self.open_window()
             
         except Exception as e:
             print(e)
-
-        else:
-
 
             
 app = MainFrame()
