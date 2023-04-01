@@ -1,3 +1,4 @@
+# Soubor vytvořen s pomocí učitele programování, Jakuba Červenky
 def filter_value(filter, value):
     if filter[0] == ">":
         return value >= filter[1]
@@ -11,30 +12,40 @@ def filter_value(filter, value):
 def filter_row(template, row):
     for i in range(0, len(template)):
         for filter in template[i]:
-            print(filter, row[i])
             if not filter_value(filter, row[i]):
                 return False
     return True
-
-def filter_lists_by_attributes(template, lists):
-    lists = code_list(lists)
-    return [lst for lst in lists if filter_row(template, lst)]
    
 def code_list(lists):
     coded_list = []
+    
     for list in lists:
         coded_list.append(list[:2] + [list[2:5]] + list[5:])
     
     return coded_list
 
-template = [
-    [["=", "inc"]],
-    [[">", 1000]],
-    [[">", [2003, 1, 1]], ["<", [2007, 7, 1]]],
-    [],
-]
-lists = [["inc", 2000, [2002, 3, 6], "cat"], ["inc", 200, [2002, 3, 25], "nig"], ["inc", 2000, [2005, 9, 30], "cock"]]
-listsTwo = [["inc", 2000, 2002, 3, 6, "cat"], ["inc", 200, 2002, 3, 25, "nig"], ["inc", 2000, 2005, 9, 30, "cock"]]
+# Vytvořeno s pomocí AI (https://chat.openai.com)
+def decode_list(lst):
+    new_lst = []
+    for element in lst:
+        if isinstance(element, list):
+            new_lst.extend(decode_list(element))
+        else:
+            new_lst.append(element)
+    return new_lst
 
-result_lists = filter_lists_by_attributes(template, listsTwo)
-print(result_lists)  # Output: [['inc', '2000', '3', '6', '2005', 'cat'], ['inc', '20000', '5', '7', '2001', 'cat']]
+# Konec pomoci AI
+
+def filter_lists_by_attributes(template, lists):
+    lists = code_list(lists)
+    new_lists =  [lst for lst in lists if filter_row(template, lst)]
+   
+    
+   
+    final_lists = []
+
+    for lst in new_lists:
+        new_list = decode_list(lst)
+        final_lists.append(new_list)
+    
+    return final_lists
