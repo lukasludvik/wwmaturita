@@ -10,7 +10,7 @@ import fileHandler as filehandle
 import sorter as sorter
 import filter as filter
 
-# Change appearance from dark to light and back using a button
+# Change appearance from dark to light and back
 ctk.set_appearance_mode('light')
 def changeApp():
     if ctk.AppearanceModeTracker.appearance_mode == 1:
@@ -31,8 +31,7 @@ class Money():
         try:
             path = os.path.join("users", user, user + ".txt")
             file = open(path, "a")
-            info = self.type + "$" + str(self.value).strip(" ") + "$" + str(self.day) + "$" + str(self.month) + "$" + str(self.year) + "$" + str(self.category + "\n")
-            file.write(info)
+            file.write(info = self.type + "$" + str(self.value).strip(" ") + "$" + str(self.day) + "$" + str(self.month) + "$" + str(self.year) + "$" + str(self.category + "\n"))
             
         except:
             print("error")
@@ -203,10 +202,10 @@ class MainFrame(ctk.CTk):
 
         tabview.set(self.changeConstant)
         
-        ctk.CTkButton(tabview.tab("Příjmy"), text = "-", command= lambda: self.changePageNum("min", win, "inc", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
-        ctk.CTkButton(tabview.tab("Příjmy"), text = "+", command= lambda: self.changePageNum("add", win, "inc", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
-        ctk.CTkButton(tabview.tab("Výdaje"), text = "-", command= lambda: self.changePageNum("min", win, "exp", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
-        ctk.CTkButton(tabview.tab("Výdaje"), text = "+", command= lambda: self.changePageNum("add", win, "exp", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
+        ctk.CTkButton(tabview.tab("Příjmy"), text = "-", command= lambda: self.change_page_num("min", win, "inc", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
+        ctk.CTkButton(tabview.tab("Příjmy"), text = "+", command= lambda: self.change_page_num("add", win, "inc", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
+        ctk.CTkButton(tabview.tab("Výdaje"), text = "-", command= lambda: self.change_page_num("min", win, "exp", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.35, rely = 0.75)
+        ctk.CTkButton(tabview.tab("Výdaje"), text = "+", command= lambda: self.change_page_num("add", win, "exp", moneyAll, labels)).place(relwidth = 0.05, relheight = 0.05, relx = 0.65, rely = 0.75)
 
         incNum = ctk.CTkLabel(tabview.tab("Příjmy"), text = str(self.pageNumInc))
         incNum.place(relheight = 0.1, relx = 0.5, rely = 0.73)
@@ -225,26 +224,26 @@ class MainFrame(ctk.CTk):
         
         #Creating delete buttons
         try:
-            incButton1 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(1, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton1 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.delete_money(1, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             incButton1.place(relx = 0.9, rely = 0.11)
-            incButton2 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(2, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton2 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.delete_money(2, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             incButton2.place( relx = 0.9, rely = 0.22)
-            incButton3 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(3, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton3 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.delete_money(3, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             incButton3.place( relx = 0.9, rely = 0.33)
-            incButton4 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(4, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton4 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.delete_money(4, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             incButton4.place( relx = 0.9, rely = 0.44)
-            incButton5 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.deleteMoney(5, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            incButton5 = ctk.CTkButton(tabview.tab("Příjmy"), width = 20, height = 20, command = lambda: self.delete_money(5, "inc", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             incButton5.place( relx = 0.9, rely = 0.55)
     
-            expButton1 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(1, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton1 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.delete_money(1, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             expButton1.place( relx = 0.9, rely = 0.11)
-            expButton2 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(2, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton2 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.delete_money(2, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             expButton2.place( relx = 0.9, rely = 0.22)
-            expButton3 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(3, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton3 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.delete_money(3, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             expButton3.place( relx = 0.9, rely = 0.33)
-            expButton4 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(4, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton4 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.delete_money(4, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             expButton4.place( relx = 0.9, rely = 0.44)
-            expButton5 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.deleteMoney(5, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
+            expButton5 = ctk.CTkButton(tabview.tab("Výdaje"), width = 20, height = 20, command = lambda: self.delete_money(5, "exp", labels, moneyAll, win), image = ctk.CTkImage(light_image= Image.open("photo/red_check.png"), size=(20, 20)), text = "")
             expButton5.place( relx = 0.9, rely = 0.55)
         except:
             print("Missing .png file or photo folder")
@@ -261,7 +260,7 @@ class MainFrame(ctk.CTk):
         self.update_money(self.user, self.inc, "inc", self.pageNumInc, moneyAll, labels, 0)
         self.update_money(self.user, self.exp, "exp", self.pageNumExp, moneyAll, labels, 1)
         
-    def deleteMoney(self, pos, typ, labels, moneyAll, win):
+    def delete_money(self, pos, typ, labels, moneyAll, win):
         try:
             finder = filehandle.FileHandler(self.user)
             if typ == "inc":
@@ -279,7 +278,7 @@ class MainFrame(ctk.CTk):
         win.withdraw()
         self.open_window()
         
-    def changePageNum(self, operation, win, type, moneyAll, labels):
+    def change_page_num(self, operation, win, type, moneyAll, labels):
         if type == "inc":
             if self.pageNumInc > 0:
                 if operation == "add":
@@ -417,7 +416,7 @@ class MainFrame(ctk.CTk):
         else:
             return True  
 
-    def filterMoneyWindow(self, type):
+    def filter_money_window(self, type):
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Filtrovat " + type)
