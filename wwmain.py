@@ -184,6 +184,8 @@ class MainFrame(ctk.CTk):
         win.geometry('1920x1080+0+0')
         win.title("WealthWise")
         win.lift()
+        self.balance = 0
+        win.protocol("WM_DELETE_WINDOW", lambda: app.destroy())
         
         moneyAll = ctk.CTkLabel(win, text= "Zůstatek:  " + str(self.balance), font=("Arial", 50), anchor="center")
         moneyAll.place(relx=0.33, rely = 0.15)
@@ -192,13 +194,13 @@ class MainFrame(ctk.CTk):
                             text='Změnit vzhled',
                             command= lambda: changeApp(),
                             ) 
-        buttonChange.place(relx = 0, rely = 0.9)
+        buttonChange.place(relwidth = 0.05, relheight = 0.03, relx = 0.025, rely = 0.9)
         
         outLabel = ctk.CTkLabel(win, text="Přihlášen: " + self.user, font=("Arial", 15))
-        outLabel.place(relx=0.07, rely=0.06, anchor="center")
+        outLabel.place(relwidth = 0.1, relheight = 0.05, relx=0.05, rely=0.06, anchor="center")
         
         buttonLogOut = ctk.CTkButton(win, text="Odhlásit se", command= lambda: self.logout(win))
-        buttonLogOut.place(relx = 0.02, rely = 0.08)
+        buttonLogOut.place(relwidth = 0.05, relheight = 0.03, relx = 0.025, rely = 0.08)
         
         tabview = ctk.CTkTabview(win)
         tabview.place(relx = 0.33, rely=0.3, relwidth = 0.33, relheight = 0.5)
@@ -255,8 +257,8 @@ class MainFrame(ctk.CTk):
             print("Missing .png file or photo folder")
         
         ctk.CTkButton(win, text = "Filtrovat", command= lambda: self.filter_money_window(win), fg_color="green").place(relwidth = 0.1, relheight = 0.03, relx = 0.45, rely = 0.85)
-        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", win)).place(relx = 0.35, rely = 0.9)
-        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", win)).place(relx = 0.35, rely = 0.9)
+        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", win)).place(relwidth = 0.2, relheight = 0.07, relx = 0.42, rely = 0.9)
+        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", win)).place(relwidth = 0.2, relheight = 0.07, relx = 0.42, rely = 0.9)
         ctk.CTkLabel(tabview.tab("Příjmy"), text = "        ".join([" Hodnota", "Rok", " Měsíc", "Den", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         ctk.CTkLabel(tabview.tab("Výdaje"), text = "        ".join([" Hodnota", "Rok", " Měsíc", "Den", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         
@@ -466,7 +468,7 @@ class MainFrame(ctk.CTk):
         day_label_two.place(relx = 0.2, rely = 0.5)
         cat_label.place(relx = 0.2, rely = 0.6)
         
-        button = ctk.CTkButton(window, text="Submit", command = lambda: self.check_filter(textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, textVal, textCat, topWin))
+        button = ctk.CTkButton(window, text="Submit", command = lambda: self.check_filter(textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, textVal, textCat, optionMenu, window, topWin))
         button.place(relx = 0.35, rely = 0.7)
         
         errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", state = "disabled")
@@ -524,8 +526,6 @@ class MainFrame(ctk.CTk):
 app = MainFrame()
 
 app.attributes("-toolwindow", True)
-
-
 
 app.protocol("WM_DELETE_WINDOW", lambda: app.destroy())
 
