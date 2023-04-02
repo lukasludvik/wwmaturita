@@ -96,7 +96,6 @@ class MainFrame(ctk.CTk):
         reg = ctk.CTkToplevel()
         reg.geometry("400x400")
         reg.title("Zaregistrovat se")
-        reg.lift()
         
         user_label = ctk.CTkLabel(reg, text="Jméno:", font=("Arial", 20))
         user_label.place(relx=0.3, rely=0.3, anchor="e")
@@ -353,7 +352,6 @@ class MainFrame(ctk.CTk):
     # Function to handle income or expense addition
     def add_income(self, type, topWindow):
         window = ctk.CTkToplevel(self)
-        window.lift()
         window.geometry("400x300")
         window.title("Přidat " + type)
         
@@ -384,7 +382,7 @@ class MainFrame(ctk.CTk):
     def isValidMonth(self, day, mon, yea):
        if (((mon == 2 and day <= 28 and self.isLeapYear(yea) == False) or (mon == 2 and day <= 29 and self.isLeapYear(yea))) or 
             (mon in [4, 6, 9, 11] and day <= 30) or 
-            (mon in [1, 3, 5, 7, 8, 10, 12] and day <= 31)):
+            (mon in [1, 3, 5, 7, 8, 10, 12] and day <= 31)) and mon > 0 and yea > 0 and day > 0:
            return True
        else:
            return False
@@ -406,7 +404,7 @@ class MainFrame(ctk.CTk):
                 errorLabel.configure(text = "Datum neexistuje")
             
         else:    
-            if self.isValidMonth(day, mon, yea) == True and val > 0 and len(cat) <= 5:
+            if self.isValidMonth(day, mon, yea) == True and val > 0 and len(cat) <= 5 and cat.strip(" ") != "" and not "$" in cat: #Here check
                 
                 self.balance = 0
                 
@@ -467,14 +465,12 @@ class MainFrame(ctk.CTk):
         day_label_two.place(relx = 0.2, rely = 0.5)
         cat_label.place(relx = 0.2, rely = 0.6)
         
-        button = ctk.CTkButton(window, text="Submit", command = lambda: self.check_filter(textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, textVal, textCat, optionMenu, window, topWin))
+        button = ctk.CTkButton(window, text="Submit", command = lambda: self.check_filter(textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, textVal, textCat, optionMenu, window, topWin, errorLabel))
         button.place(relx = 0.35, rely = 0.7)
         
-        errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", state = "disabled")
+        errorLabel = ctk.CTkLabel(window, text = "Chyba", bg_color="red", state = "disabled")
 
-        window.lift()
-
-    def check_filter(self, textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, textVal, textCat, optionMenu, window, topWin):
+    def check_filter(self, textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, textVal, textCat, optionMenu, window, topWin, errorLabel):
         
         self.template = [[],[],[],[]]
 
@@ -487,22 +483,30 @@ class MainFrame(ctk.CTk):
                         self.template[1] = [["<", int(textVal.get())]]
                     else:
                         self.template[1] = [["=", int(textVal.get())]]
+
             except:
                 print("Error with value")
+                errorLabel.place(relx = 0.35, rely = 0.7)
 
             try:
                 if textDayOne.get() != "" and textMonOne.get() != "" and textYeaOne.get() != "":
                     if self.isValidMonth(int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())) == True:
                         self.template[2].append([">", [int(textYeaOne.get()), int(textMonOne.get()), int(textDayOne.get())]])
+                    else:
+                        errorLabel.place(relx = 0.35, rely = 0.7)
             except Exception as e:
                 print("Error with first date", e)
+                errorLabel.place(relx = 0.35, rely = 0.7)
 
             try:
                 if textDayTwo.get() != "" and textMonTwo.get() != "" and textYeaTwo.get() != "":
                     if self.isValidMonth(int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())) == True:
                         self.template[2].append(["<", [int(textYeaTwo.get()), int(textMonTwo.get()), int(textDayTwo.get())]])
+                    else:
+                        errorLabel.place(relx = 0.35, rely = 0.7)
             except Exception as e:
                 print("Error with second date", e)
+                errorLabel.place(relx = 0.35, rely = 0.7)
 
             try:
                 if textCat.get() != "":
@@ -510,6 +514,7 @@ class MainFrame(ctk.CTk):
             
             except Exception as e:
                 print("Error with category")
+                errorLabel.place(relx = 0.35, rely = 0.7)
 
             print(self.template)
 

@@ -1,9 +1,9 @@
 # Soubor vytvořen s pomocí učitele programování, Jakuba Červenky
 def filter_value(filter, value):
     if filter[0] == ">":
-        return value >= filter[1]
+        return value > filter[1]
     elif filter[0] == "<":
-        return value <= filter[1]
+        return value < filter[1]
     elif filter[0] == "=":
         return value == filter[1]
     else:
