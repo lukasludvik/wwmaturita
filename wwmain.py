@@ -9,6 +9,7 @@ import users.accountMaker as ac
 import fileHandler as filehandle
 import sorter as sorter
 import filter as filter
+import graph as graph
 
 # Change appearance from dark to light and back
 ctk.set_appearance_mode('light')
@@ -31,10 +32,11 @@ class Money():
         try:
             path = os.path.join("users", user, user + ".txt")
             file = open(path, "a")
-            file.write(info = self.type + "$" + str(self.value).strip(" ") + "$" + str(self.day) + "$" + str(self.month) + "$" + str(self.year) + "$" + str(self.category + "\n"))
+            file.write(self.type + "$" + str(self.value).strip(" ") + "$" + str(self.day) + "$" + str(self.month) + "$" + str(self.year) + "$" + str(self.category) + "\n")
             
-        except:
+        except Exception as e:
             print("error")
+            print(e)
 
 class MainFrame(ctk.CTk):
     
@@ -248,8 +250,8 @@ class MainFrame(ctk.CTk):
             print("Missing .png file or photo folder")
         
         ctk.CTkButton(win, text = "Filtrovat", command= lambda: self.filter_money_window(moneyAll, labels, win), fg_color="green").place(relwidth = 0.1, relheight = 0.03, relx = 0.45, rely = 0.85)
-        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview, moneyAll, labels)).place(relx = 0.35, rely = 0.9)
-        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview, moneyAll, labels)).place(relx = 0.35, rely = 0.9)
+        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview, moneyAll, labels, win)).place(relx = 0.35, rely = 0.9)
+        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview, moneyAll, labels, win)).place(relx = 0.35, rely = 0.9)
         ctk.CTkLabel(tabview.tab("Příjmy"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         ctk.CTkLabel(tabview.tab("Výdaje"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         
@@ -258,12 +260,23 @@ class MainFrame(ctk.CTk):
         
     def delete_money(self, pos, typ, win):
         try:
+            print(self.money)
+            print(self.money[0][(((self.pageNum[0] - 1) * 5) + pos) - 1])
+
+            text = ""
+            for i in range(6):
+                text = text + str(self.info[0][(((self.pageNum[0] - 1) * 5) + pos) - 1][i])
+                if i != 5:
+                    text = text + '$'
+
+            print(text)
+
             finder = filehandle.FileHandler(self.user)
             if typ == "inc":
-                finder.deleteLine(self.money[0][(((self.pageNum[0] - 1) * 5) + pos) - 1])
+                finder.deleteLine(text)
                 
             elif typ == "exp":
-                finder.deleteLine(self.money[1][(((self.pageNum[0] - 1) * 5) + pos) - 1])
+                finder.deleteLine(text)
             else:
                 pass
 
@@ -308,18 +321,16 @@ class MainFrame(ctk.CTk):
                     continue
                 
                 if type == "inc":
-                    self.money[0].append(i.strip("\n"))
+                    list.append(i.strip("\n"))
                     self.balance += int(val)
                 else:
-                    self.money[1].append(i.strip("\n"))
+                    list.append(i.strip("\n"))
                     self.balance -= int(val)
             
             try:
                 self.info[x] = sorter.sort_money(self.info[x])
             except:
-                pass
-            
-            print(self.template)
+                print("sorting error")
 
             self.info[x] = filter.filter_lists_by_attributes(self.template, self.info[x])
             
@@ -338,7 +349,7 @@ class MainFrame(ctk.CTk):
                     break                
         
     # Function to handle income or expense addition
-    def add_income(self, type, tabview, moneyAll, labels):
+    def add_income(self, type, tabview, moneyAll, labels, topWindow):
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Přidat " + type)
@@ -364,7 +375,7 @@ class MainFrame(ctk.CTk):
         
         errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", state = "disabled")
         
-        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview, moneyAll, labels, errorLabel))
+        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview, moneyAll, labels, errorLabel, topWindow))
         button.place(relx = 0.35, rely = 0.5)
         
     def isValidMonth(self, day, mon, yea):
@@ -376,7 +387,7 @@ class MainFrame(ctk.CTk):
            return False
 
     # Function to handle submitting info about income or expense
-    def submit(self, win, type, val, day, mon, yea, cat, tabview, moneyAll, labels, errorLabel):
+    def submit(self, win, type, val, day, mon, yea, cat, tabview, moneyAll, labels, errorLabel, topWindow):
         try:
             val = int(val)
             day = int(day)
@@ -401,10 +412,9 @@ class MainFrame(ctk.CTk):
                 else:
                     Money("exp", val, day, mon, yea, cat.strip()).save_money_info(self.user)
                     
-                self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0)
-                self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1)
-
-                win.destroy()    
+                win.destroy()   
+                topWindow.destroy()
+                self.open_window() 
 
     def isLeapYear(self, year):
         if year % 4 != 0:
@@ -417,6 +427,9 @@ class MainFrame(ctk.CTk):
             return True  
 
     def filter_money_window(self, moneyAll, labels, topWin):
+
+        #graph.showGraph(self.info)
+
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Filtrovat")
