@@ -14,7 +14,7 @@ def showGraph(old_data):
     dates_exp = []
     values_exp = []
     for d in data:
-        date = datetime(d[4], d[3], d[2])
+        date = datetime(d[2], d[3], d[4])
         value = d[1]
         if d[0] == 'inc':
             if date in dates_inc:

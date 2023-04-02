@@ -252,9 +252,9 @@ class MainFrame(ctk.CTk):
         except:
             print("Missing .png file or photo folder")
         
-        ctk.CTkButton(win, text = "Filtrovat", command= lambda: self.filter_money_window(moneyAll, labels, win), fg_color="green").place(relwidth = 0.1, relheight = 0.03, relx = 0.45, rely = 0.85)
-        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview, moneyAll, labels, win)).place(relx = 0.35, rely = 0.9)
-        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview, moneyAll, labels, win)).place(relx = 0.35, rely = 0.9)
+        ctk.CTkButton(win, text = "Filtrovat", command= lambda: self.filter_money_window(win), fg_color="green").place(relwidth = 0.1, relheight = 0.03, relx = 0.45, rely = 0.85)
+        ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", win)).place(relx = 0.35, rely = 0.9)
+        ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", win)).place(relx = 0.35, rely = 0.9)
         ctk.CTkLabel(tabview.tab("Příjmy"), text = "        ".join([" Hodnota", "Rok", " Měsíc", "Den", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         ctk.CTkLabel(tabview.tab("Výdaje"), text = "        ".join([" Hodnota", "Rok", " Měsíc", "Den", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         
@@ -348,7 +348,7 @@ class MainFrame(ctk.CTk):
             print(self.info)              
         
     # Function to handle income or expense addition
-    def add_income(self, type, tabview, moneyAll, labels, topWindow):
+    def add_income(self, type, topWindow):
         window = ctk.CTkToplevel(self)
         window.lift()
         window.geometry("400x300")
@@ -375,7 +375,7 @@ class MainFrame(ctk.CTk):
         
         errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", state = "disabled")
         
-        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), tabview, moneyAll, labels, errorLabel, topWindow))
+        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), errorLabel, topWindow))
         button.place(relx = 0.35, rely = 0.5)
         
     def isValidMonth(self, day, mon, yea):
@@ -387,7 +387,7 @@ class MainFrame(ctk.CTk):
            return False
 
     # Function to handle submitting info about income or expense
-    def submit(self, win, type, val, day, mon, yea, cat, tabview, moneyAll, labels, errorLabel, topWindow):
+    def submit(self, win, type, val, day, mon, yea, cat, errorLabel, topWindow):
         try:
             val = int(val)
             day = int(day)
@@ -426,11 +426,11 @@ class MainFrame(ctk.CTk):
         else:
             return True  
 
-    def filter_money_window(self, moneyAll, labels, topWin):
+    def filter_money_window(self, topWin):
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Filtrovat")
-        window.lift()
+        
 
         textVal = ctk.CTkEntry(window, font=("Arial", 15), width=140, height=10)
         val_label = ctk.CTkLabel(window, text="Hodnota", font=("Arial", 15))
@@ -464,12 +464,14 @@ class MainFrame(ctk.CTk):
         day_label_two.place(relx = 0.2, rely = 0.5)
         cat_label.place(relx = 0.2, rely = 0.6)
         
-        button = ctk.CTkButton(window, text="Submit", command = lambda: self.check_filter(textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, errorLabel, textVal, textCat, optionMenu, moneyAll, labels, window, topWin))
+        button = ctk.CTkButton(window, text="Submit", command = lambda: self.check_filter(textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, textVal, textCat, topWin))
         button.place(relx = 0.35, rely = 0.7)
         
         errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", state = "disabled")
 
-    def check_filter(self, textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, errorLabel, textVal, textCat, optionMenu, moneyAll, labels, window, topWin):
+        window.lift()
+
+    def check_filter(self, textDayOne, textMonOne, textYeaOne, textDayTwo, textMonTwo, textYeaTwo, textVal, textCat, optionMenu, window, topWin):
         
         self.template = [[],[],[],[]]
 
