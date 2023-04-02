@@ -53,6 +53,7 @@ class MainFrame(ctk.CTk):
         self.maxPageNum = [1, 1]
         self.changeConstant = "Příjmy"
         
+        
         super().__init__()
         self.load_users()
         
@@ -96,6 +97,7 @@ class MainFrame(ctk.CTk):
         reg = ctk.CTkToplevel()
         reg.geometry("400x400")
         reg.title("Zaregistrovat se")
+        reg.resizable(False, False)
         
         user_label = ctk.CTkLabel(reg, text="Jméno:", font=("Arial", 20))
         user_label.place(relx=0.3, rely=0.3, anchor="e")
@@ -125,7 +127,7 @@ class MainFrame(ctk.CTk):
     def handle_register(self, reg, user, passw, error):
         if user in self.users: 
             error.place(relx = 0.4, rely = 0.7)
-        elif user.strip(" ") != "":
+        elif user.strip(" ") != "" and passw.strip(" ") != "" and not "$" in passw and (not "\n" in user and not "\t" in user):
             try:
                 file = open("users\password.txt", "a")
                 file.write(user + "\n")
@@ -135,16 +137,19 @@ class MainFrame(ctk.CTk):
                 hasher.update(salt.encode() + passw.encode())
                 hashed_passw = hasher.hexdigest()
                 
-                file.write(salt + "$" + hashed_passw + "\n") #Saves the password in a file
+                file.write(salt + "$" + hashed_passw + "\n")
                 
                 ac.AccountMaker(user)
                 
                 reg.destroy()
                 file.close()
                 
-                self.load_users() #Reloads the users from the file
+                self.load_users()
             except:
                 print("Saving account failed")
+        else:
+            error.place(relx = 0.3, rely = 0.8)
+            error.configure(text = "Jméno nebo heslo není povoleno")
     
     # Function to handle logging in
     def handle_login(self, username, password):
@@ -184,6 +189,7 @@ class MainFrame(ctk.CTk):
         win.title("WealthWise")
         self.balance = 0
         win.protocol("WM_DELETE_WINDOW", lambda: app.destroy())
+        win.resizable(False, False)
         
         moneyAll = ctk.CTkLabel(win, text= "Zůstatek:  " + str(self.balance), font=("Arial", 50), anchor="center")
         moneyAll.place(relx=0.33, rely = 0.15)
@@ -354,6 +360,7 @@ class MainFrame(ctk.CTk):
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Přidat " + type)
+        window.resizable(False, False)
         
         textVal = ctk.CTkEntry(window, font=("Arial", 15), width=140, height=10)
         val_label = ctk.CTkLabel(window, text="Hodnota", font=("Arial", 15))
@@ -376,7 +383,7 @@ class MainFrame(ctk.CTk):
         
         errorLabel = ctk.CTkLabel(window, text = "", bg_color="red", state = "disabled")
         
-        button = ctk.CTkButton(window, text="Submit", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), errorLabel, topWindow))
+        button = ctk.CTkButton(window, text="Přidat", command= lambda: self.submit(window, type, textVal.get(), textDay.get(), textMon.get(), textYea.get(), textCat.get(), errorLabel, topWindow))
         button.place(relx = 0.35, rely = 0.5)
         
     def isValidMonth(self, day, mon, yea):
@@ -431,6 +438,7 @@ class MainFrame(ctk.CTk):
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Filtrovat")
+        window.resizable(False, False)
         
 
         textVal = ctk.CTkEntry(window, font=("Arial", 15), width=140, height=10)
@@ -515,8 +523,6 @@ class MainFrame(ctk.CTk):
             except Exception as e:
                 print("Error with category")
                 errorLabel.place(relx = 0.35, rely = 0.7)
-
-            print(self.template)
 
             topWin.withdraw()
             window.withdraw()
