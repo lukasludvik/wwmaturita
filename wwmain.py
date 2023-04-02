@@ -20,19 +20,20 @@ def changeApp():
         ctk.set_appearance_mode('dark')
         
 class Money():
-    def __init__(self, type, value, day, month, year, category):
+    def __init__(self, type, value, year, month, day, category):
         self.type = type
         self.value = value
-        self.day = day
-        self.month = month
         self.year = year
+        self.month = month
+        self.day = day
+        
         self.category = category
         
     def save_money_info(self, user):
         try:
             path = os.path.join("users", user, user + ".txt")
             file = open(path, "a")
-            file.write(self.type + "$" + str(self.value).strip(" ") + "$" + str(self.day) + "$" + str(self.month) + "$" + str(self.year) + "$" + str(self.category) + "\n")
+            file.write(self.type + "$" + str(self.value).strip(" ") + "$" + str(self.year) + "$" + str(self.month) + "$" + str(self.day) + "$" + str(self.category) + "\n")
             
         except Exception as e:
             print("error")
@@ -93,6 +94,7 @@ class MainFrame(ctk.CTk):
         reg = ctk.CTkToplevel()
         reg.geometry("400x400")
         reg.title("Zaregistrovat se")
+        reg.lift()
         
         user_label = ctk.CTkLabel(reg, text="Jméno:", font=("Arial", 20))
         user_label.place(relx=0.3, rely=0.3, anchor="e")
@@ -179,6 +181,7 @@ class MainFrame(ctk.CTk):
         win = ctk.CTkToplevel(self)
         win.geometry('1920x1080+0+0')
         win.title("WealthWise")
+        win.lift()
         
         moneyAll = ctk.CTkLabel(win, text= "Zůstatek:  " + str(self.balance), font=("Arial", 50), anchor="center")
         moneyAll.place(relx=0.33, rely = 0.15)
@@ -252,24 +255,21 @@ class MainFrame(ctk.CTk):
         ctk.CTkButton(win, text = "Filtrovat", command= lambda: self.filter_money_window(moneyAll, labels, win), fg_color="green").place(relwidth = 0.1, relheight = 0.03, relx = 0.45, rely = 0.85)
         ctk.CTkButton(tabview.tab("Příjmy"), text="Přidat příjem", command= lambda: self.add_income("příjem", tabview, moneyAll, labels, win)).place(relx = 0.35, rely = 0.9)
         ctk.CTkButton(tabview.tab("Výdaje"), text= "Přidat výdaj", command= lambda: self.add_income("výdaj", tabview, moneyAll, labels, win)).place(relx = 0.35, rely = 0.9)
-        ctk.CTkLabel(tabview.tab("Příjmy"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
-        ctk.CTkLabel(tabview.tab("Výdaje"), text = "        ".join([" Hodnota", "Den", " Měsíc", "Rok", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
+        ctk.CTkLabel(tabview.tab("Příjmy"), text = "        ".join([" Hodnota", "Rok", " Měsíc", "Den", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
+        ctk.CTkLabel(tabview.tab("Výdaje"), text = "        ".join([" Hodnota", "Rok", " Měsíc", "Den", "Kategorie"])).place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0)
         
         self.update_money(self.user, self.money[0], "inc", self.pageNum[0], moneyAll, labels, 0)
         self.update_money(self.user, self.money[1], "exp", self.pageNum[1], moneyAll, labels, 1)
+
+        ctk.CTkButton(win, text= "Ukázat graf", command= lambda: graph.showGraph(self.info), fg_color="black").place(relwidth = 0.08, relheight = 0.02, relx = 0.46, rely = 0.9)
         
     def delete_money(self, pos, typ, win):
         try:
-            print(self.money)
-            print(self.money[0][(((self.pageNum[0] - 1) * 5) + pos) - 1])
-
             text = ""
             for i in range(6):
                 text = text + str(self.info[0][(((self.pageNum[0] - 1) * 5) + pos) - 1][i])
                 if i != 5:
                     text = text + '$'
-
-            print(text)
 
             finder = filehandle.FileHandler(self.user)
             if typ == "inc":
@@ -277,12 +277,9 @@ class MainFrame(ctk.CTk):
                 
             elif typ == "exp":
                 finder.deleteLine(text)
-            else:
-                pass
 
-        except Exception as e:
+        except:
             print("Invalid button clicked")
-            print(e)
 
         win.withdraw()
         self.open_window()
@@ -295,9 +292,9 @@ class MainFrame(ctk.CTk):
                     self.pageNum[0] -= 1
             self.changeConstant = "Příjmy"
         else:
-            if operation == "add" and self.pageNum[0] > 0 and self.pageNum[0] < self.maxPageNum[0]:
+            if operation == "add" and self.pageNum[1] > 0 and self.pageNum[1] < self.maxPageNum[1]:
                 self.pageNum[1] += 1
-            elif operation == "min" and self.pageNum[0] > 1 and self.pageNum[0] <= self.maxPageNum[0]:
+            elif operation == "min" and self.pageNum[1] > 1 and self.pageNum[1] <= self.maxPageNum[1]:
                 self.pageNum[1] -= 1 
             self.changeConstant = "Výdaje"
                 
@@ -315,8 +312,8 @@ class MainFrame(ctk.CTk):
         with open(path) as file:
             for i in file:
                 if i.startswith(type):
-                    typ, val, day, mon, yea, cat = i.split("$")
-                    self.info[x].append([typ, int(val), day, mon, yea, cat.strip("\n")])
+                    typ, val, yea, mon, day, cat = i.split("$")
+                    self.info[x].append([typ, int(val), yea, mon, day, cat.strip("\n")])
                 else:
                     continue
                 
@@ -345,12 +342,15 @@ class MainFrame(ctk.CTk):
                     labels[x][i].configure(text = statement)           
                     moneyAll.configure(text="Zůstatek:     " + str(self.balance))
                 except:
-                    print("Ended loop")
-                    break                
+                    break  
+
+
+            print(self.info)              
         
     # Function to handle income or expense addition
     def add_income(self, type, tabview, moneyAll, labels, topWindow):
         window = ctk.CTkToplevel(self)
+        window.lift()
         window.geometry("400x300")
         window.title("Přidat " + type)
         
@@ -408,9 +408,9 @@ class MainFrame(ctk.CTk):
                 self.balance = 0
                 
                 if type == "příjem":
-                    Money("inc", val, day, mon, yea, cat.strip()).save_money_info(self.user)
+                    Money("inc", val, yea, mon, day, cat.strip()).save_money_info(self.user)
                 else:
-                    Money("exp", val, day, mon, yea, cat.strip()).save_money_info(self.user)
+                    Money("exp", val, yea, mon, day, cat.strip()).save_money_info(self.user)
                     
                 win.destroy()   
                 topWindow.destroy()
@@ -427,12 +427,10 @@ class MainFrame(ctk.CTk):
             return True  
 
     def filter_money_window(self, moneyAll, labels, topWin):
-
-        #graph.showGraph(self.info)
-
         window = ctk.CTkToplevel(self)
         window.geometry("400x300")
         window.title("Filtrovat")
+        window.lift()
 
         textVal = ctk.CTkEntry(window, font=("Arial", 15), width=140, height=10)
         val_label = ctk.CTkLabel(window, text="Hodnota", font=("Arial", 15))
@@ -490,16 +488,16 @@ class MainFrame(ctk.CTk):
             try:
                 if textDayOne.get() != "" and textMonOne.get() != "" and textYeaOne.get() != "":
                     if self.isValidMonth(int(textDayOne.get()), int(textMonOne.get()), int(textYeaOne.get())) == True:
-                        self.template[2][0] = [[">", [int(textYeaOne.get()), int(textMonOne.get()), int(textDayOne.get())]]]
-            except:
-                print("Error with first date")
+                        self.template[2].append([">", [int(textYeaOne.get()), int(textMonOne.get()), int(textDayOne.get())]])
+            except Exception as e:
+                print("Error with first date", e)
 
             try:
                 if textDayTwo.get() != "" and textMonTwo.get() != "" and textYeaTwo.get() != "":
                     if self.isValidMonth(int(textDayTwo.get()), int(textMonTwo.get()), int(textYeaTwo.get())) == True:
-                        self.template[2][1] = [["<", [int(textYeaTwo.get()), int(textMonTwo.get()), int(textDayTwo.get())]]]
-            except:
-                print("Error with second date")
+                        self.template[2].append(["<", [int(textYeaTwo.get()), int(textMonTwo.get()), int(textDayTwo.get())]])
+            except Exception as e:
+                print("Error with second date", e)
 
             try:
                 if textCat.get() != "":
@@ -507,6 +505,8 @@ class MainFrame(ctk.CTk):
             
             except Exception as e:
                 print("Error with category")
+
+            print(self.template)
 
             topWin.withdraw()
             window.withdraw()

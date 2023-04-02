@@ -37,15 +37,18 @@ def decode_list(lst):
 # Konec pomoci AI
 
 def filter_lists_by_attributes(template, lists):
+    print(lists)
     lists = code_list(lists)
+    print(lists)
+
     new_lists =  [lst for lst in lists if filter_row(template, lst)]
-   
-    
    
     final_lists = []
 
     for lst in new_lists:
         new_list = decode_list(lst)
         final_lists.append(new_list)
+
+    print(final_lists)
     
     return final_lists

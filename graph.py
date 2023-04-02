@@ -41,6 +41,7 @@ def showGraph(old_data):
     ax.set_xticks(dates)
 
     ax.set_ylim(bottom=0)
+    plt.xticks(rotation=45)
 
     for i, date in enumerate(dates_inc):
         value = values_inc[i]
