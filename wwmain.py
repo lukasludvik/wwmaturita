@@ -61,10 +61,12 @@ class MainFrame(ctk.CTk):
         
         try:
             img = ctk.CTkImage(light_image= Image.open("photo/logo.png"), size=(500,100))
+            logo = ctk.CTkLabel(self, image=img, text= "")
+            logo.place(relx = 0.32, rely = 0.1)
         except:
             print("Missing .png file or photo file")
-        logo = ctk.CTkLabel(self, image=img, text= "")
-        logo.place(relx = 0.32, rely = 0.1)
+        
+        
 
         # Create a username input field
         self.user_label = ctk.CTkLabel(self, text="Jméno:", font=("Arial", 20))
@@ -523,6 +525,9 @@ app = MainFrame()
 
 app.attributes("-toolwindow", True)
 
+
+
+app.protocol("WM_DELETE_WINDOW", lambda: app.destroy())
 
 if __name__ == "__main__":
     app.mainloop()
