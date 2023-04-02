@@ -89,7 +89,7 @@ class MainFrame(ctk.CTk):
         self.login_button.place(relx=0.5, rely=0.65, anchor="center")
         
         # Error label in case of failure
-        self.error = ctk.CTkLabel(self, text="Jméno nebo heslo neexistuje", font=("Arial", 16), text_color="white")
+        self.error = ctk.CTkLabel(self, text="Jméno nebo heslo neexistuje", font=("Arial", 16), fg_color="red")
     
     # Function to register a new account
     def register(self):
@@ -183,7 +183,6 @@ class MainFrame(ctk.CTk):
         win = ctk.CTkToplevel(self)
         win.geometry('1920x1080+0+0')
         win.title("WealthWise")
-        win.lift()
         self.balance = 0
         win.protocol("WM_DELETE_WINDOW", lambda: app.destroy())
         
